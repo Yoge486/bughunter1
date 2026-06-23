@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // --- FIX: Add HTTP Security Headers to the application itself.
   // Ironic that a security scanner was missing its own security headers.
   async headers() {
