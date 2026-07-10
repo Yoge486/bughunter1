@@ -99,7 +99,7 @@ function ScannerContent() {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: url.replace(/\.git$/, "") }),
       });
 
       if (!response.ok) {
@@ -173,7 +173,7 @@ function ScannerContent() {
               <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
             )}
             <input
-              type="url"
+              type={scanType === "github" ? "text" : "url"}
               value={url}
               onChange={(e) => {
                 const val = e.target.value;

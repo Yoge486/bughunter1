@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     }
 
     const urlObj = new URL(url);
-    const parts = urlObj.pathname.split("/").filter(Boolean);
+    const parts = urlObj.pathname.replace(/\.git$/, "").split("/").filter(Boolean);
     if (parts.length < 2) {
       return NextResponse.json({ error: "Invalid GitHub Repository URL" }, { status: 400 });
     }
