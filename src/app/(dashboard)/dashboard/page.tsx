@@ -86,10 +86,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      // Fetch recent scans
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Fetch recent scans filtered by user
       const { data: scans } = await supabase
         .from("scans")
         .select("*")
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(5);
 
@@ -127,6 +131,7 @@ export default function DashboardPage() {
       const { data: chartData } = await supabase
         .from("scans")
         .select("*")
+        .eq("user_id", user.id)
         .eq("status", "completed")
         .not("security_score", "is", null)
         .order("created_at", { ascending: false })

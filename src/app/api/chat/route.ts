@@ -21,11 +21,17 @@ export async function POST(request: NextRequest) {
 
     // Fetch scan and vulnerabilities to feed as context
     const supabase = await createServerSupabaseClient();
-    
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { data: scan, error: scanError } = await supabase
       .from("scans")
       .select("*")
       .eq("id", scanId)
+      .eq("user_id", user.id)  // enforce ownership
       .single();
 
     if (scanError || !scan) {

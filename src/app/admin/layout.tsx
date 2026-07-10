@@ -66,7 +66,7 @@ export default function AdminLayout({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+            className="fixed inset-0 bg-slate-900/40 z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -75,7 +75,7 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={`fixed lg:sticky top-0 left-0 h-screen w-[260px] z-50 flex flex-col
-          bg-bg-secondary border-r border-border rounded-none transition-transform duration-300
+          bg-white border-r border-border rounded-none transition-transform duration-300 shadow-sm
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
         {/* Logo */}
@@ -107,8 +107,8 @@ export default function AdminLayout({
                 href={item.href}
                 className={`sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
                   isActive 
-                    ? "bg-severity-high/10 text-severity-high font-medium" 
-                    : "text-text-secondary hover:bg-white/5 hover:text-text-primary"
+                    ? "bg-severity-high/10 text-severity-high font-medium border border-severity-high/20" 
+                    : "text-text-secondary hover:bg-slate-50 hover:text-text-primary"
                 }`}
                 onClick={() => setSidebarOpen(false)}
               >
@@ -124,7 +124,7 @@ export default function AdminLayout({
           <div className="relative">
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors"
+              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors"
             >
               <div className="w-9 h-9 rounded-full bg-severity-high/15 flex items-center justify-center border border-severity-high/20">
                 <Settings className="w-4 h-4 text-severity-high" />
@@ -148,7 +148,7 @@ export default function AdminLayout({
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 5 }}
-                  className="absolute bottom-full left-0 right-0 mb-2 glass-card p-2"
+                  className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-border rounded-xl shadow-lg p-2"
                 >
                   <button
                     onClick={handleLogout}
@@ -165,12 +165,12 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen bg-bg-primary">
+      <main className="flex-1 min-h-screen">
         {/* Top Bar (mobile) */}
-        <header className="lg:hidden sticky top-0 z-30 px-4 py-3 glass-card-static rounded-none border-b border-border flex items-center justify-between">
+        <header className="lg:hidden sticky top-0 z-30 px-4 py-3 bg-white border-b border-border flex items-center justify-between shadow-sm">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-white/5"
+            className="p-2 rounded-lg hover:bg-slate-100"
           >
             <Menu className="w-5 h-5" />
           </button>

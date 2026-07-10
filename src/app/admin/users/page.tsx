@@ -42,19 +42,19 @@ export default async function AdminUsersPage() {
         <div className="overflow-x-auto">
           <table className="data-table w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border bg-bg-secondary/50">
-                <th className="p-4 font-semibold">User</th>
-                <th className="p-4 font-semibold">Role</th>
-                <th className="p-4 font-semibold">Total Scans</th>
-                <th className="p-4 font-semibold">Joined</th>
-                <th className="p-4 font-semibold">Status</th>
+              <tr className="border-b border-border bg-slate-50">
+                <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">User</th>
+                <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Role</th>
+                <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Total Scans</th>
+                <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Joined</th>
+                <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {usersWithStats.map((u) => {
                 const isAdmin = u.user_metadata?.role === 'admin';
                 return (
-                  <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-accent-cyan/10 flex items-center justify-center border border-accent-cyan/20">

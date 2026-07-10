@@ -19,11 +19,12 @@ export default function GodModePage() {
         await new Promise(r => setTimeout(r, 1000));
         setStatus("upgrading");
 
-        // 2. Call the secret API — pass the GODMODE_SECRET for server-side verification
+        // 2. Call the secret API — no need to pass the secret from client
+        // The server verifies using the private GODMODE_SECRET env var
         const res = await fetch("/api/godmode", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ secret: process.env.NEXT_PUBLIC_GODMODE_SECRET }),
+          body: JSON.stringify({}),
         });
         if (!res.ok) {
           const data = await res.json();

@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 
 function ScoreColor(score: number | null) {
   if (score === null) return "#64748b";
-  if (score >= 90) return "#00e676";
-  if (score >= 70) return "#ffc400";
-  return "#ff1744";
+  if (score >= 90) return "#16a34a";
+  if (score >= 70) return "#d97706";
+  return "#dc2626";
 }
 
 function ScoreLabel(score: number | null) {
@@ -59,13 +59,13 @@ export default async function AdminScansPage() {
           <div className="overflow-x-auto">
             <table className="data-table w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-border bg-bg-secondary/50">
-                  <th className="p-4 font-semibold">Target URL</th>
-                  <th className="p-4 font-semibold">User</th>
-                  <th className="p-4 font-semibold">Score</th>
-                  <th className="p-4 font-semibold">Status</th>
-                  <th className="p-4 font-semibold">Date</th>
-                  <th className="p-4 font-semibold">Action</th>
+                <tr className="border-b border-border bg-slate-50">
+                  <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Target URL</th>
+                  <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">User</th>
+                  <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Score</th>
+                  <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Status</th>
+                  <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Date</th>
+                  <th className="p-4 font-semibold text-text-secondary text-xs uppercase tracking-wide">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -74,7 +74,7 @@ export default async function AdminScansPage() {
                   const userName = scanUser?.user_metadata?.full_name || scanUser?.email || "Unknown User";
                   
                   return (
-                    <tr key={scan.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={scan.id} className="hover:bg-slate-50 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <ExternalLink className="w-4 h-4 text-text-muted flex-shrink-0" />

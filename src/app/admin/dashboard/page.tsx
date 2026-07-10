@@ -97,7 +97,7 @@ export default async function AdminDashboardPage() {
         
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-text-secondary">
-            <thead className="text-xs uppercase bg-white/5 text-text-primary border-b border-border">
+            <thead className="text-xs uppercase bg-slate-50 text-text-secondary border-b border-border">
               <tr>
                 <th className="px-4 py-3">Target</th>
                 <th className="px-4 py-3">Type</th>
@@ -115,12 +115,12 @@ export default async function AdminDashboardPage() {
                 </tr>
               ) : (
                 recentScans.map((scan) => (
-                  <tr key={scan.id} className="border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3 font-medium text-white max-w-[200px] truncate" title={scan.target_url}>
+                  <tr key={scan.id} className="border-b border-border hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-text-primary max-w-[200px] truncate" title={scan.target_url}>
                       {scan.target_url}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-1 rounded bg-white/5 text-xs">
+                      <span className="px-2 py-1 rounded bg-slate-100 text-text-secondary text-xs border border-border">
                         {scan.target_type === "url" ? "Website" : "GitHub Repo"}
                       </span>
                     </td>
