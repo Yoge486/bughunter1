@@ -90,6 +90,26 @@ const SECURITY_HEADERS = [
   },
 ];
 
+// Known third-party/platform cookies that are not controlled by the app developer
+const PLATFORM_COOKIES = [
+  "_v-anonymous-id",
+  "_v-anonymous-id-renewed",
+  "_v-consent",
+  "visitor-id",
+  "_ga",
+  "_gid",
+  "_gat",
+  "__utma",
+  "__utmb",
+  "__utmc",
+  "__utmz",
+  "_fbp",
+  "_hjid",
+  "_hjSessionUser",
+  "intercom-id",
+  "intercom-session",
+];
+
 // Cookie security checks
 function checkCookies(cookieHeader: string | null): VulnerabilityResult[] {
   const vulns: VulnerabilityResult[] = [];
@@ -100,6 +120,11 @@ function checkCookies(cookieHeader: string | null): VulnerabilityResult[] {
     for (const cookie of cookies) {
       const cookieName = cookie.split("=")[0]?.trim();
       if (!cookieName) continue;
+
+      // Skip known platform/analytics cookies — developer has no control over these
+      if (PLATFORM_COOKIES.some(pc => cookieName.toLowerCase().startsWith(pc.toLowerCase()))) {
+        continue;
+      }
 
       if (!cookie.toLowerCase().includes("httponly")) {
         vulns.push({
@@ -199,9 +224,19 @@ async function performDirectoryChecks(origin: string): Promise<VulnerabilityResu
           if (check.keyword && !text.includes(check.keyword)) {
             match = false;
           }
-          if (check.path === "/admin" || check.path === "/wp-admin") {
+          // For /admin: require WordPress or CMS-specific markers, not just generic login words
+          if (check.path === "/admin") {
             const lowerText = text.toLowerCase();
-            if (!lowerText.includes("login") && !lowerText.includes("password") && !lowerText.includes("username") && !lowerText.includes("input")) {
+            const hasLoginForm = lowerText.includes("password") && lowerText.includes("username") && lowerText.includes("<form");
+            if (!hasLoginForm) {
+              match = false;
+            }
+          }
+          // For /wp-admin: require WordPress-specific markers to avoid false positives
+          if (check.path === "/wp-admin") {
+            const lowerText = text.toLowerCase();
+            const isWordPress = lowerText.includes("wordpress") || lowerText.includes("wp-login") || lowerText.includes("wp-includes");
+            if (!isWordPress) {
               match = false;
             }
           }
