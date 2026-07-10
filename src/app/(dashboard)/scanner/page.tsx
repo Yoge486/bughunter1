@@ -144,11 +144,11 @@ function ScannerContent() {
       </div>
 
       {/* Target Type Tabs */}
-      <div className="flex items-center gap-2 bg-white/[0.02] p-1 rounded-xl w-fit border border-white/[0.05]">
+      <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit border border-border">
         <button
           onClick={() => setScanType("url")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            scanType === "url" ? "bg-accent-cyan/10 text-accent-cyan" : "text-text-secondary hover:text-white hover:bg-white/5"
+            scanType === "url" ? "bg-white text-accent-cyan shadow-sm border border-border" : "text-text-secondary hover:text-text-primary hover:bg-white/60"
           }`}
         >
           <Globe className="w-4 h-4" /> Website URL
@@ -156,7 +156,7 @@ function ScannerContent() {
         <button
           onClick={() => setScanType("github")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            scanType === "github" ? "bg-accent-purple/10 text-accent-purple" : "text-text-secondary hover:text-white hover:bg-white/5"
+            scanType === "github" ? "bg-white text-accent-purple shadow-sm border border-border" : "text-text-secondary hover:text-text-primary hover:bg-white/60"
           }`}
         >
           <Github className="w-4 h-4" /> GitHub Repository
@@ -228,8 +228,7 @@ function ScannerContent() {
                 <div
                   className="absolute top-1/2 left-1/2 w-1/2 h-1 origin-left animate-radar"
                   style={{
-                    background:
-                      "linear-gradient(90deg, #00f5d4 0%, transparent 100%)",
+                    background: "linear-gradient(90deg, #1d6ff2 0%, transparent 100%)",
                   }}
                 />
               </div>
@@ -257,10 +256,7 @@ function ScannerContent() {
               <div className="h-2 bg-bg-secondary rounded-full overflow-hidden">
                 <motion.div
                   className="h-full rounded-full"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, #00f5d4, #00bbf9)",
-                  }}
+                  style={{ background: "linear-gradient(90deg, #1d6ff2, #0a4fd4)" }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.3 }}
                 />
@@ -391,7 +387,7 @@ function ScannerContent() {
                     const isExpanded = expandedVuln === i;
 
                     return (
-                      <div key={i} className="transition-colors hover:bg-white/[0.01]">
+                      <div key={i} className="transition-colors hover:bg-slate-50">
                         <button
                           onClick={() =>
                             setExpandedVuln(isExpanded ? null : i)
@@ -438,7 +434,7 @@ function ScannerContent() {
                               className="overflow-hidden"
                             >
                               <div className="px-5 pb-5 pl-18 space-y-4">
-                                <div className="p-4 rounded-xl bg-bg-secondary">
+                                <div className="p-4 rounded-xl bg-slate-50 border border-border">
                                   <h4 className="text-sm font-semibold text-accent-cyan mb-2">
                                     📝 Description
                                   </h4>
@@ -447,7 +443,7 @@ function ScannerContent() {
                                   </p>
                                 </div>
 
-                                <div className="p-4 rounded-xl bg-bg-secondary">
+                                <div className="p-4 rounded-xl bg-slate-50 border border-border">
                                   <h4 className="text-sm font-semibold text-severity-low mb-2">
                                     🔧 Remediation
                                   </h4>
@@ -507,9 +503,9 @@ function ScannerContent() {
 }
 
 function ScoreToColor(score: number): string {
-  if (score >= 90) return "#00e676";
-  if (score >= 70) return "#ffc400";
-  return "#ff1744";
+  if (score >= 90) return "#16a34a";
+  if (score >= 70) return "#d97706";
+  return "#dc2626";
 }
 
 export default function ScannerPage() {

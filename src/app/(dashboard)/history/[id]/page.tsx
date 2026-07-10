@@ -42,9 +42,9 @@ interface ScanDetail {
 }
 
 function ScoreToColor(score: number): string {
-  if (score >= 90) return "#00e676";
-  if (score >= 70) return "#ffc400";
-  return "#ff1744";
+  if (score >= 90) return "#16a34a";
+  if (score >= 70) return "#d97706";
+  return "#dc2626";
 }
 
 const severityOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
@@ -440,7 +440,7 @@ export default function ScanDetailPage({ params }: { params: Promise<{ id: strin
 
                     {isExpanded && (
                       <div className="px-5 pb-5 pl-14 space-y-4">
-                        <div className="p-4 rounded-xl bg-bg-secondary">
+                        <div className="p-4 rounded-xl bg-slate-50 border border-border">
                           <h4 className="text-sm font-semibold text-accent-cyan mb-2">
                             📝 Description
                           </h4>
@@ -448,7 +448,7 @@ export default function ScanDetailPage({ params }: { params: Promise<{ id: strin
                             {vuln.description}
                           </p>
                         </div>
-                        <div className="p-4 rounded-xl bg-bg-secondary">
+                        <div className="p-4 rounded-xl bg-slate-50 border border-border">
                           <h4 className="text-sm font-semibold text-severity-low mb-2">
                             🔧 Remediation
                           </h4>

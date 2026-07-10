@@ -318,8 +318,8 @@ export default function MonitoringPage() {
                     datasets: [
                       {
                         data: m.history?.map((h) => h.security_score) || [],
-                        borderColor: '#00f5d4',
-                        backgroundColor: 'rgba(0, 245, 212, 0.1)',
+                        borderColor: '#1d6ff2',
+                        backgroundColor: 'rgba(29, 111, 242, 0.08)',
                         borderWidth: 2,
                         pointRadius: 0,
                         pointHoverRadius: 4,

@@ -221,7 +221,7 @@ export default function ReportsPage() {
                   labels: ["Critical", "High", "Medium", "Low", "Info"],
                   datasets: [{
                     data: [severityCounts.critical, severityCounts.high, severityCounts.medium, severityCounts.low, severityCounts.info],
-                    backgroundColor: ["#ff1744", "#ff6d00", "#ffc400", "#00e676", "#00bbf9"],
+                    backgroundColor: ["#dc2626", "#ea580c", "#d97706", "#16a34a", "#2563eb"],
                     borderWidth: 0,
                     hoverOffset: 4
                   }]
@@ -230,7 +230,7 @@ export default function ReportsPage() {
                   maintainAspectRatio: false,
                   cutout: "70%",
                   plugins: {
-                    legend: { position: "right", labels: { color: "rgba(255,255,255,0.7)", padding: 20 } }
+                    legend: { position: "right", labels: { color: "#475569", padding: 20 } }
                   }
                 }} 
               />
@@ -261,7 +261,7 @@ export default function ReportsPage() {
                         return acc;
                       }, {} as Record<string, number>)
                     ).sort(([, a], [, b]) => b - a).slice(0, 5).map(([, count]) => count),
-                    backgroundColor: "#9b5de5",
+                    backgroundColor: "#5b4be8",
                     borderRadius: 4
                   }]
                 }}
@@ -269,8 +269,8 @@ export default function ReportsPage() {
                   maintainAspectRatio: false,
                   plugins: { legend: { display: false } },
                   scales: {
-                    y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "rgba(255,255,255,0.5)", stepSize: 1 } },
-                    x: { grid: { display: false }, ticks: { color: "rgba(255,255,255,0.5)", maxRotation: 45, minRotation: 45 } }
+                    y: { grid: { color: "rgba(29,111,242,0.08)" }, ticks: { color: "#475569", stepSize: 1 } },
+                    x: { grid: { display: false }, ticks: { color: "#475569", maxRotation: 45, minRotation: 45 } }
                   }
                 }}
               />
@@ -330,7 +330,7 @@ export default function ReportsPage() {
                 .sort(([, a], [, b]) => b - a)
                 .slice(0, 5)
                 .map(([category, count]) => (
-                  <div key={category} className="flex items-center justify-between p-3 bg-bg-secondary rounded-lg">
+                  <div key={category} className="flex items-center justify-between p-3 bg-slate-50 border border-border rounded-lg">
                     <span className="font-medium capitalize">{category.replace(/_/g, " ")}</span>
                     <span className="badge badge-info">{count} issues</span>
                   </div>

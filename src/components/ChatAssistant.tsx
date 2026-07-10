@@ -22,18 +22,18 @@ const PreBlock = ({ children, ...props }: any) => {
   };
 
   return (
-    <div className="relative group mt-2 rounded-lg overflow-hidden bg-black/50 border border-white/[0.08]">
+    <div className="relative group mt-2 rounded-lg overflow-hidden bg-slate-50 border border-border">
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
         <button
           onClick={handleCopy}
-          className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-text-muted hover:text-white transition-colors"
+          className="p-1.5 rounded-md bg-slate-200 hover:bg-slate-300 text-text-secondary hover:text-text-primary transition-colors"
           title="Copy code"
         >
-          {copied ? <Check className="w-3 h-3 text-[#00e676]" /> : <Copy className="w-3 h-3" />}
+          {copied ? <Check className="w-3 h-3 text-severity-low" /> : <Copy className="w-3 h-3" />}
         </button>
       </div>
       <div className="p-3 overflow-x-auto scrollbar-thin">
-        <pre className="font-mono text-xs text-cyan-400" {...props}>
+        <pre className="font-mono text-xs text-accent-blue" {...props}>
           {children}
         </pre>
       </div>
@@ -185,33 +185,33 @@ export default function ChatAssistant({ scanId, targetUrl }: ChatAssistantProps)
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-full sm:w-[480px] bg-[#0d1527]/95 border-l border-white/[0.08] backdrop-blur-xl z-50 flex flex-col shadow-2xl"
+              className="fixed top-0 right-0 h-full w-full sm:w-[480px] bg-white border-l border-border z-50 flex flex-col shadow-2xl"
             >
               {/* Header */}
-              <div className="p-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+              <div className="p-4 border-b border-border flex items-center justify-between bg-slate-50">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-accent-cyan/15 to-accent-purple/15 border border-accent-cyan/35 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-accent-cyan/10 border border-accent-cyan/25 flex items-center justify-center">
                     <Sparkles className="w-5 h-5 text-accent-cyan animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white text-sm flex items-center gap-1.5">
+                    <h3 className="font-semibold text-text-primary text-sm">
                       BugHunter AI Assistant
                     </h3>
-                    <p className="text-xs text-text-secondary truncate max-w-[280px]">
+                    <p className="text-xs text-text-muted truncate max-w-[280px]">
                       Remediating {targetUrl}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-text-muted hover:text-white transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Messages Body */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin bg-slate-50/50">
                 {messages.map((msg, index) => (
                   <div
                     key={index}
@@ -220,22 +220,22 @@ export default function ChatAssistant({ scanId, targetUrl }: ChatAssistantProps)
                     }`}
                   >
                     {msg.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-lg bg-accent-purple/10 border border-accent-purple/25 flex items-center justify-center flex-shrink-0">
-                        <Bot className="w-4 h-4 text-accent-purple" />
+                      <div className="w-8 h-8 rounded-lg bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-4 h-4 text-accent-cyan" />
                       </div>
                     )}
                     <div
                       className={`max-w-[80%] rounded-2xl p-4 text-sm leading-relaxed ${
                         msg.role === "user"
-                          ? "bg-gradient-to-r from-accent-cyan/20 to-accent-purple/10 border border-accent-cyan/30 text-white rounded-tr-none"
-                          : "bg-white/[0.03] border border-white/[0.06] text-text-secondary rounded-tl-none"
+                          ? "bg-gradient-to-r from-accent-cyan to-accent-blue text-white rounded-tr-none shadow-sm"
+                          : "bg-white border border-border text-text-secondary rounded-tl-none shadow-sm"
                       }`}
                     >
                       <ReactMarkdown
                         components={{
                           pre: PreBlock,
                           code: ({ node: _node, ...props }: any) => (
-                            <code className="px-1.5 py-0.5 rounded bg-white/5 font-mono text-xs text-cyan-400" {...props} />
+                            <code className="px-1.5 py-0.5 rounded bg-slate-100 font-mono text-xs text-accent-blue" {...props} />
                           ),
                         }}
                       >
@@ -243,7 +243,7 @@ export default function ChatAssistant({ scanId, targetUrl }: ChatAssistantProps)
                       </ReactMarkdown>
                     </div>
                     {msg.role === "user" && (
-                      <div className="w-8 h-8 rounded-lg bg-accent-cyan/10 border border-accent-cyan/25 flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center flex-shrink-0">
                         <User className="w-4 h-4 text-accent-cyan" />
                       </div>
                     )}
@@ -251,16 +251,16 @@ export default function ChatAssistant({ scanId, targetUrl }: ChatAssistantProps)
                 ))}
                 {loading && (
                   <div className="flex gap-3 justify-start">
-                    <div className="w-8 h-8 rounded-lg bg-accent-purple/10 border border-accent-purple/25 flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-accent-purple" />
+                    <div className="w-8 h-8 rounded-lg bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center">
+                      <Bot className="w-4 h-4 text-accent-cyan" />
                     </div>
-                    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl rounded-tl-none p-4 flex items-center gap-2 text-sm text-text-secondary">
+                    <div className="bg-white border border-border rounded-2xl rounded-tl-none p-4 flex items-center gap-2 text-sm text-text-secondary shadow-sm">
                       <Loader2 className="w-4 h-4 animate-spin text-accent-cyan" />
                       AI is typing...
                     </div>
                   </div>
                 )}
-                
+
                 {/* Quick Prompts */}
                 {messages.length === 1 && !loading && (
                   <div className="flex flex-wrap gap-2 mt-4">
@@ -268,7 +268,7 @@ export default function ChatAssistant({ scanId, targetUrl }: ChatAssistantProps)
                       <button
                         key={idx}
                         onClick={() => handleSend(undefined, prompt)}
-                        className="px-3 py-1.5 rounded-full border border-accent-cyan/20 bg-accent-cyan/5 text-xs text-accent-cyan hover:bg-accent-cyan/15 transition-colors cursor-pointer"
+                        className="px-3 py-1.5 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 text-xs text-accent-cyan hover:bg-accent-cyan/10 transition-colors cursor-pointer"
                       >
                         {prompt}
                       </button>
@@ -281,20 +281,20 @@ export default function ChatAssistant({ scanId, targetUrl }: ChatAssistantProps)
               {/* Chat Input */}
               <form
                 onSubmit={handleSend}
-                className="p-4 border-t border-white/[0.08] bg-white/[0.01] flex gap-2"
+                className="p-4 border-t border-border bg-white flex gap-2"
               >
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask how to fix a vulnerability..."
-                  className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-text-muted focus:outline-none focus:border-accent-cyan/50"
+                  className="flex-1 bg-slate-50 border border-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-cyan focus:ring-2 focus:ring-accent-cyan/10"
                   disabled={loading}
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || loading}
-                  className="w-11 h-11 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-purple flex items-center justify-center text-white disabled:opacity-50 hover:shadow-cyan-500/15 transition-shadow cursor-pointer"
+                  className="w-11 h-11 rounded-xl bg-gradient-to-r from-accent-cyan to-accent-blue flex items-center justify-center text-white disabled:opacity-50 hover:shadow-md transition-shadow cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                 </button>

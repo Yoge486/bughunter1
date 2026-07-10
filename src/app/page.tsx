@@ -35,28 +35,28 @@ const features = [
     title: "Website Security Scanner",
     description:
       "Scan any website URL to analyze its security posture and detect vulnerabilities in real-time.",
-    color: "#00f5d4",
+    color: "#1d6ff2",
   },
   {
     icon: AlertTriangle,
     title: "Vulnerability Detection",
     description:
       "Detect SQL Injection, XSS, missing security headers, authentication weaknesses, and misconfigurations.",
-    color: "#ff6d00",
+    color: "#ea580c",
   },
   {
     icon: Brain,
     title: "AI Security Assistant",
     description:
       "AI explains vulnerability impact, attack scenarios, recommended fixes, and security best practices.",
-    color: "#9b5de5",
+    color: "#5b4be8",
   },
   {
     icon: FileText,
     title: "PDF Reports",
     description:
       "Generate downloadable reports with vulnerability details, severity levels, and recommendations.",
-    color: "#00bbf9",
+    color: "#0a4fd4",
   },
 ];
 
@@ -71,7 +71,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
+      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-white/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative">
@@ -242,17 +242,17 @@ export default function LandingPage() {
                     {
                       range: "90-100",
                       label: "Secure",
-                      color: "#00e676",
+                      color: "#16a34a",
                     },
                     {
                       range: "70-89",
                       label: "Medium Risk",
-                      color: "#ffc400",
+                      color: "#d97706",
                     },
                     {
                       range: "0-69",
                       label: "High Risk",
-                      color: "#ff1744",
+                      color: "#dc2626",
                     },
                   ].map((level, i) => (
                     <div
@@ -305,8 +305,8 @@ export default function LandingPage() {
                         x2="100%"
                         y2="0%"
                       >
-                        <stop offset="0%" stopColor="#00f5d4" />
-                        <stop offset="100%" stopColor="#00bbf9" />
+                        <stop offset="0%" stopColor="#1d6ff2" />
+                        <stop offset="100%" stopColor="#0a4fd4" />
                       </linearGradient>
                     </defs>
                   </svg>

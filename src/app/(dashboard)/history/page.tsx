@@ -31,9 +31,9 @@ const fadeUp = {
 
 function ScoreColor(score: number | null) {
   if (score === null) return "#64748b";
-  if (score >= 90) return "#00e676";
-  if (score >= 70) return "#ffc400";
-  return "#ff1744";
+  if (score >= 90) return "#16a34a";
+  if (score >= 70) return "#d97706";
+  return "#dc2626";
 }
 
 export default function HistoryPage() {

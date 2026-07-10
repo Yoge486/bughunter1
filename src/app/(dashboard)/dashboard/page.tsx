@@ -59,9 +59,9 @@ interface ScanRecord {
 
 function ScoreColor(score: number | null) {
   if (score === null) return "#64748b";
-  if (score >= 90) return "#00e676";
-  if (score >= 70) return "#ffc400";
-  return "#ff1744";
+  if (score >= 90) return "#16a34a";
+  if (score >= 70) return "#d97706";
+  return "#dc2626";
 }
 
 function ScoreLabel(score: number | null) {
@@ -153,54 +153,42 @@ export default function DashboardPage() {
       icon: Scan,
       label: "Total Scans",
       value: stats.totalScans,
-      color: "#00f5d4",
+      color: "#1d6ff2",
     },
     {
       icon: AlertTriangle,
       label: "Vulnerabilities",
       value: stats.vulnerabilities,
-      color: "#ff6d00",
+      color: "#ea580c",
     },
     {
       icon: TrendingUp,
       label: "Avg Score",
       value: stats.avgScore || "—",
-      color: "#00bbf9",
+      color: "#0a4fd4",
     },
     {
       icon: FileText,
       label: "Reports",
       value: stats.reports,
-      color: "#9b5de5",
+      color: "#5b4be8",
     },
   ];
 
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
+    plugins: { legend: { display: false } },
     scales: {
       y: {
         min: 0,
         max: 100,
-        grid: {
-          color: "rgba(255, 255, 255, 0.05)",
-        },
-        ticks: {
-          color: "rgba(255, 255, 255, 0.5)",
-        },
+        grid: { color: "rgba(29, 111, 242, 0.08)" },
+        ticks: { color: "#475569" },
       },
       x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: "rgba(255, 255, 255, 0.5)",
-        },
+        grid: { display: false },
+        ticks: { color: "#475569" },
       },
     },
   };
@@ -209,13 +197,9 @@ export default function DashboardPage() {
     labels: historicalScans.map((s) => {
       try {
         const urlObj = new URL(s.target_url);
-        return `${urlObj.hostname.slice(0, 15)} (${new Date(
-          s.created_at
-        ).toLocaleDateString(undefined, { month: "short", day: "numeric" })})`;
+        return `${urlObj.hostname.slice(0, 15)} (${new Date(s.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })})`;
       } catch {
-        return `${s.target_url.slice(0, 15)} (${new Date(
-          s.created_at
-        ).toLocaleDateString(undefined, { month: "short", day: "numeric" })})`;
+        return `${s.target_url.slice(0, 15)} (${new Date(s.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })})`;
       }
     }),
     datasets: [
@@ -223,8 +207,8 @@ export default function DashboardPage() {
         fill: true,
         label: "Security Score",
         data: historicalScans.map((s) => s.security_score || 0),
-        borderColor: "#00f5d4",
-        backgroundColor: "rgba(0, 245, 212, 0.05)",
+        borderColor: "#1d6ff2",
+        backgroundColor: "rgba(29, 111, 242, 0.06)",
         tension: 0.4,
       },
     ],
@@ -300,7 +284,7 @@ export default function DashboardPage() {
       {/* Trend Chart */}
       {historicalScans.length > 1 && (
         <motion.div variants={fadeUp} className="glass-card p-6">
-          <h2 className="text-lg font-semibold mb-4 text-white">Security Score Trend</h2>
+          <h2 className="text-lg font-semibold mb-4">Security Score Trend</h2>
           <div className="h-64 w-full relative">
             <Line data={lineChartData} options={chartOptions} />
           </div>

@@ -129,7 +129,7 @@ export default function LoginPage() {
               id="login-submit"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-bg-primary/30 border-t-bg-primary rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   Sign In <ArrowRight className="w-4 h-4" />
