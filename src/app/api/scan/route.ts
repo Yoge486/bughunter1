@@ -13,22 +13,13 @@ interface VulnerabilityResult {
 }
 
 // Security headers that should be present
+// Note: HSTS is only checked on HTTPS sites (HTTP sites can't use HSTS meaningfully)
 const SECURITY_HEADERS = [
-  {
-    header: "strict-transport-security",
-    name: "Missing HSTS Header",
-    severity: "high" as const,
-    description:
-      "The Strict-Transport-Security (HSTS) header is not set. This allows attackers to perform protocol downgrade attacks and cookie hijacking.",
-    remediation:
-      'Add the header: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload',
-    ai_explanation:
-      "Without HSTS, users connecting via HTTP can be intercepted by attackers performing man-in-the-middle attacks. The attacker can strip the TLS connection and serve content over plain HTTP, potentially stealing credentials or session tokens. This is known as an SSL stripping attack.",
-  },
   {
     header: "content-security-policy",
     name: "Missing Content Security Policy",
     severity: "high" as const,
+    httpsOnly: false,
     description:
       "No Content-Security-Policy header found. This makes the site vulnerable to XSS and data injection attacks.",
     remediation:
@@ -37,9 +28,22 @@ const SECURITY_HEADERS = [
       "CSP is your primary defense against Cross-Site Scripting (XSS). Without it, an attacker who finds an injection point can execute arbitrary JavaScript in users' browsers, leading to session hijacking, data theft, or defacement.",
   },
   {
+    header: "strict-transport-security",
+    name: "Missing HSTS Header",
+    severity: "high" as const,
+    httpsOnly: true, // Only relevant for HTTPS sites
+    description:
+      "The Strict-Transport-Security (HSTS) header is not set. This allows attackers to perform protocol downgrade attacks and cookie hijacking.",
+    remediation:
+      'Add the header: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload',
+    ai_explanation:
+      "Without HSTS, users connecting via HTTP can be intercepted by attackers performing man-in-the-middle attacks. The attacker can strip the TLS connection and serve content over plain HTTP, potentially stealing credentials or session tokens. This is known as an SSL stripping attack.",
+  },
+  {
     header: "x-content-type-options",
     name: "Missing X-Content-Type-Options",
     severity: "medium" as const,
+    httpsOnly: false,
     description:
       "The X-Content-Type-Options header is not set. Browsers may MIME-sniff the response, potentially interpreting content incorrectly.",
     remediation: "Add the header: X-Content-Type-Options: nosniff",
@@ -50,6 +54,7 @@ const SECURITY_HEADERS = [
     header: "x-frame-options",
     name: "Missing X-Frame-Options",
     severity: "medium" as const,
+    httpsOnly: false,
     description:
       "The X-Frame-Options header is not set. The site can be embedded in iframes, making it vulnerable to clickjacking attacks.",
     remediation: "Add the header: X-Frame-Options: DENY or SAMEORIGIN",
@@ -57,19 +62,10 @@ const SECURITY_HEADERS = [
       "Without this header, an attacker can embed your site in a transparent iframe on a malicious page. Users think they are interacting with the attacker's page but are actually clicking on your site — potentially changing account settings, transferring funds, or granting permissions.",
   },
   {
-    header: "x-xss-protection",
-    name: "Missing X-XSS-Protection",
-    severity: "low" as const,
-    description:
-      "The X-XSS-Protection header is not set. While modern browsers have built-in XSS filters, this header provides an additional layer.",
-    remediation: "Add the header: X-XSS-Protection: 1; mode=block",
-    ai_explanation:
-      "This header tells the browser to block the page if it detects a reflected XSS attack. While CSP is the primary defense, this provides defense-in-depth for older browsers.",
-  },
-  {
     header: "referrer-policy",
     name: "Missing Referrer-Policy",
     severity: "low" as const,
+    httpsOnly: false,
     description:
       "No Referrer-Policy header found. The site may leak sensitive URL information to third parties.",
     remediation:
@@ -81,6 +77,7 @@ const SECURITY_HEADERS = [
     header: "permissions-policy",
     name: "Missing Permissions-Policy",
     severity: "low" as const,
+    httpsOnly: false,
     description:
       "No Permissions-Policy header found. Browser features like camera, microphone, and geolocation are not restricted.",
     remediation:
@@ -90,69 +87,65 @@ const SECURITY_HEADERS = [
   },
 ];
 
-// Known third-party/platform cookies that are not controlled by the app developer
-const PLATFORM_COOKIES = [
-  "_v-anonymous-id",
-  "_v-anonymous-id-renewed",
-  "_v-consent",
-  "visitor-id",
-  "_ga",
-  "_gid",
-  "_gat",
-  "__utma",
-  "__utmb",
-  "__utmc",
-  "__utmz",
-  "_fbp",
-  "_hjid",
-  "_hjSessionUser",
-  "intercom-id",
-  "intercom-session",
-];
-
 // Cookie security checks
+// Set-Cookie headers are newline-separated when merged by fetch API
 function checkCookies(cookieHeader: string | null): VulnerabilityResult[] {
   const vulns: VulnerabilityResult[] = [];
+  if (!cookieHeader) return vulns;
 
-  if (cookieHeader) {
-    const cookies = cookieHeader.split(",").map((c) => c.trim());
+  // Split on newline first, then fallback to the heuristic comma-split
+  // A valid Set-Cookie entry always starts with a name=value pair (no leading space after the name)
+  // We split on ", " only when the next token looks like a new cookie name (word chars followed by =)
+  const cookies: string[] = [];
+  let current = "";
+  for (const part of cookieHeader.split(/,(?=\s*[a-zA-Z0-9_\-]+=)/)) {
+    current = part.trim();
+    if (current) cookies.push(current);
+  }
 
-    for (const cookie of cookies) {
-      const cookieName = cookie.split("=")[0]?.trim();
-      if (!cookieName) continue;
+  for (const cookie of cookies) {
+    const cookieName = cookie.split("=")[0]?.trim();
+    if (!cookieName) continue;
 
-      // Skip known platform/analytics cookies — developer has no control over these
-      if (PLATFORM_COOKIES.some(pc => cookieName.toLowerCase().startsWith(pc.toLowerCase()))) {
-        continue;
-      }
+    // Skip known platform/analytics cookies — developer has no control over these
+    const knownPlatformPrefixes = ["_v-", "_ga", "_gid", "_gat", "__utm", "_fbp", "_hj", "intercom-", "visitor-"];
+    if (knownPlatformPrefixes.some((p: string) => cookieName.toLowerCase().startsWith(p))) {
+      continue;
+    }
 
-      if (!cookie.toLowerCase().includes("httponly")) {
-        vulns.push({
-          name: `Cookie "${cookieName}" Missing HttpOnly Flag`,
-          description: `The cookie "${cookieName}" does not have the HttpOnly flag, making it accessible to JavaScript.`,
-          severity: "medium",
-          category: "cookies",
-          remediation:
-            "Set the HttpOnly flag on all sensitive cookies to prevent JavaScript access.",
-          ai_explanation:
-            "Without HttpOnly, cookies are accessible via document.cookie in JavaScript. If an XSS vulnerability exists, an attacker can steal session cookies and hijack user accounts.",
-          evidence: { cookie: cookieName },
-        });
-      }
+    // Only flag cookies that look like session/auth cookies (skip analytics/tracking)
+    const lowerName = cookieName.toLowerCase();
+    const isSensitive = lowerName.includes("session") || lowerName.includes("auth") ||
+      lowerName.includes("token") || lowerName.includes("user") || lowerName.includes("uid") ||
+      lowerName.includes("id") || lowerName.includes("login") || lowerName.includes("csrf") ||
+      lowerName.includes("sid") || lowerName.startsWith("sb-"); // Supabase cookies
 
-      if (!cookie.toLowerCase().includes("secure")) {
-        vulns.push({
-          name: `Cookie "${cookieName}" Missing Secure Flag`,
-          description: `The cookie "${cookieName}" does not have the Secure flag, allowing transmission over HTTP.`,
-          severity: "medium",
-          category: "cookies",
-          remediation:
-            "Set the Secure flag on all cookies to ensure they are only sent over HTTPS.",
-          ai_explanation:
-            "Without the Secure flag, cookies can be sent over unencrypted HTTP connections, allowing attackers on shared networks to intercept and steal session cookies.",
-          evidence: { cookie: cookieName },
-        });
-      }
+    if (!isSensitive) continue;
+
+    if (!cookie.toLowerCase().includes("httponly")) {
+      vulns.push({
+        name: `Cookie "${cookieName}" Missing HttpOnly Flag`,
+        description: `The cookie "${cookieName}" does not have the HttpOnly flag, making it accessible to JavaScript.`,
+        severity: "medium",
+        category: "cookies",
+        remediation: "Set the HttpOnly flag on all sensitive cookies to prevent JavaScript access.",
+        ai_explanation:
+          "Without HttpOnly, cookies are accessible via document.cookie in JavaScript. If an XSS vulnerability exists, an attacker can steal session cookies and hijack user accounts.",
+        evidence: { cookie: cookieName },
+      });
+    }
+
+    if (!cookie.toLowerCase().includes("secure")) {
+      vulns.push({
+        name: `Cookie "${cookieName}" Missing Secure Flag`,
+        description: `The cookie "${cookieName}" does not have the Secure flag, allowing transmission over HTTP.`,
+        severity: "medium",
+        category: "cookies",
+        remediation: "Set the Secure flag on all cookies to ensure they are only sent over HTTPS.",
+        ai_explanation:
+          "Without the Secure flag, cookies can be sent over unencrypted HTTP connections, allowing attackers on shared networks to intercept and steal session cookies.",
+        evidence: { cookie: cookieName },
+      });
     }
   }
 
@@ -214,6 +207,7 @@ async function performDirectoryChecks(origin: string): Promise<VulnerabilityResu
         const url = `${origin}${check.path}`;
         const res = await fetch(url, {
           method: "GET",
+          redirect: "manual", // Don't follow redirects — a redirect is NOT exposure
           signal: controller.signal,
           headers: { "User-Agent": "BugHunter-AI-Scanner/1.0" }
         });
@@ -268,33 +262,33 @@ async function performDirectoryChecks(origin: string): Promise<VulnerabilityResu
   return vulns;
 }
 
-// Technology detection
+// Technology detection — use specific markers to avoid false positives
 function detectTechnologies(
   headers: Record<string, string>,
   body: string
 ): string[] {
   const techs: string[] = [];
 
-  // Server header
   const server = headers["server"];
   if (server) techs.push(`Server: ${server}`);
 
-  // X-Powered-By
   const poweredBy = headers["x-powered-by"];
   if (poweredBy) techs.push(`Powered by: ${poweredBy}`);
 
-  // Body-based detection
-  if (body.includes("wp-content") || body.includes("wordpress"))
-    techs.push("WordPress");
-  if (body.includes("react") || body.includes("__NEXT"))
-    techs.push("React/Next.js");
-  if (body.includes("angular")) techs.push("Angular");
-  if (body.includes("vue")) techs.push("Vue.js");
-  if (body.includes("jquery") || body.includes("jQuery"))
-    techs.push("jQuery");
-  if (body.includes("bootstrap")) techs.push("Bootstrap");
-  if (body.includes("tailwind")) techs.push("Tailwind CSS");
-  if (body.includes("cloudflare")) techs.push("Cloudflare");
+  // Use specific, unambiguous markers only
+  if (body.includes("wp-content/") || body.includes("wp-includes/")) techs.push("WordPress");
+  if (body.includes("__NEXT_DATA__") || body.includes("_next/static")) techs.push("Next.js");
+  else if (body.includes("react-dom")) techs.push("React");
+  if (body.includes("ng-version=") || body.includes("ng-app")) techs.push("Angular");
+  if (body.includes("__vue__") || body.includes("data-v-app")) techs.push("Vue.js");
+  if (body.includes("jquery.min.js") || body.includes("jquery-")) techs.push("jQuery");
+  if (body.includes("bootstrap.min.css") || body.includes("bootstrap.min.js")) techs.push("Bootstrap");
+  if (headers["cf-ray"] || headers["cf-cache-status"]) techs.push("Cloudflare");
+  if (headers["x-vercel-id"] || (server && server.toLowerCase().includes("vercel"))) techs.push("Vercel");
+  if (headers["x-amz-request-id"] || headers["x-amzn-requestid"]) techs.push("AWS");
+  if (body.includes("Shopify.theme") || body.includes("cdn.shopify.com")) techs.push("Shopify");
+  if (body.includes("drupal") && body.includes("sites/default")) techs.push("Drupal");
+  if (body.includes("joomla") || headers["x-content-encoded-by"]?.toLowerCase().includes("joomla")) techs.push("Joomla");
 
   return [...new Set(techs)];
 }
@@ -409,7 +403,6 @@ export async function POST(request: NextRequest) {
     const vulnerabilities: VulnerabilityResult[] = [];
     const responseHeaders: Record<string, string> = {};
     let responseBody = "";
-    let cookieHeader: string | null = null;
 
     // Fetch the target URL
     try {
@@ -432,7 +425,6 @@ export async function POST(request: NextRequest) {
         responseHeaders[key.toLowerCase()] = value;
       });
 
-      cookieHeader = response.headers.get("set-cookie");
       responseBody = await response.text();
 
       // Check if HTTPS
@@ -451,8 +443,10 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Check security headers
+      // Check security headers (skip HTTPS-only headers for HTTP sites)
+      const isHttps = targetUrl.protocol === "https:";
       for (const check of SECURITY_HEADERS) {
+        if (check.httpsOnly && !isHttps) continue;
         if (!responseHeaders[check.header]) {
           vulnerabilities.push({
             name: check.name,
@@ -466,8 +460,10 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Check cookie security
-      const cookieVulns = checkCookies(cookieHeader);
+      // Check cookie security — Set-Cookie headers must be parsed individually
+      // (the fetch API merges them with ", " which can break cookie parsing)
+      const rawSetCookie = response.headers.get("set-cookie");
+      const cookieVulns = checkCookies(rawSetCookie);
       vulnerabilities.push(...cookieVulns);
 
       // Perform active directory/file checks
